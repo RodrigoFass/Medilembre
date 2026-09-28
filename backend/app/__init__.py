@@ -54,9 +54,11 @@ def _register_error_handlers(app):
 def create_app(config_name: str = None):
     app = Flask(__name__)
 
-    from config import config_by_name
+    from config import config_by_name, validate_production_secrets
     env = config_name or os.getenv("FLASK_ENV", "development")
     app.config.from_object(config_by_name.get(env, config_by_name["development"]))
+    if env == "production":
+        validate_production_secrets(app.config)
 
     _configure_logging(app)
     _register_error_handlers(app)
@@ -64,7 +66,7 @@ def create_app(config_name: str = None):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    CORS(app, origins=["http://localhost:3000"])
+    CORS(app, origins=app.config["CORS_ORIGINS"])
     mail.init_app(app)
 
     from app.routes.auth import auth_bp
