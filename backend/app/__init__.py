@@ -83,8 +83,10 @@ def create_app(config_name: str = None):
 
     with app.app_context():
         db.create_all()
-        from app.services.scheduler import start_scheduler
-        start_scheduler(app)
+        # Background jobs would keep running against the DB during the test suite
+        if not app.config.get("TESTING"):
+            from app.services.scheduler import start_scheduler
+            start_scheduler(app)
 
     app.logger.info("MediLembre iniciado no ambiente: %s", env)
     return app

@@ -4,13 +4,10 @@ from app import create_app, db as _db
 
 @pytest.fixture(scope="session")
 def app():
-    app = create_app()
-    app.config.update({
-        "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-        "JWT_SECRET_KEY": "test-secret-key-at-least-32-chars-long!!",
-        "MAIL_SUPPRESS_SEND": True,
-    })
+    # "testing" config must be chosen at creation time: Flask-SQLAlchemy binds the
+    # engine inside init_app(), so overriding the URI afterwards has no effect and
+    # the tests would run (and drop_all) against the development database.
+    app = create_app("testing")
     with app.app_context():
         _db.create_all()
         yield app

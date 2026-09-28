@@ -63,7 +63,7 @@ class ProductionConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
-    JWT_SECRET_KEY = "test-secret"
+    JWT_SECRET_KEY = "test-secret-key-at-least-32-chars-long!!"
     MAIL_SUPPRESS_SEND = True
 
 
